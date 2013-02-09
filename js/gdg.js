@@ -19,6 +19,8 @@ $.get('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=abo
 
 var dates=[];
 //gdg dev site events feed
+var now = new Date();
+
 $.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
     for(var i=data.length-1;i>=0;i--){
         var start = new Date(data[i].start);dates.push(start);
@@ -32,10 +34,14 @@ $.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
                             '<h4 class="media-heading"><a href="https://developers.google.com'+data[i].link+'" target="_blank">'+data[i].title+'</a></h4>' +
                             '<h5>'+data[i].location+'<br/>'+format+'</h5>' +
                             data[i].description +
-                        '</div>' +
-                    '</div>';
+                        '</div>';        
+        html +='</div>';
         
-        $('#events').next().next().append(html);
+		if (start < now){
+            $('#events').next().next().append(html);
+		} else {
+            $('#newevents').next().next().prepend(html);
+		}
     }
 },'json');
 
