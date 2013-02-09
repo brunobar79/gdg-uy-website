@@ -2,7 +2,7 @@ var Config = (function(){
     var config = {
         'name' : 'GDG Fresno',
         'id' : '114769570436363155784',
-        'api': 'AIzaSyAUVhaIWz50KQ4j-wzkZm3ZJPhvND2GAqk'
+        'api': _API_KEY_
     }
     return {get : function(a) { return config[a]}}
 })();
