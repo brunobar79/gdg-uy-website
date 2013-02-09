@@ -1,0 +1,11 @@
+GDG Bootstrap v0.01
+Created by Joshua Woodward
+
+Includes jQuery, Twitter Bootstrap, a JavaScript Date Formatter - License all inside
+
+How do I use it?
+Go to Google Developer API console (https://code.google.com/apis/console/) and create a project, or use existing one, that has the Google+ Service turned on. You will need an API Key to get "About" and "Photo" sections to work.
+
+Open /js/gdg.js and modify the config lines 3-5, with your GDG Name, Google+ Profile ID (Use your chapters +Page, not your personal), and API Key
+
+Should just work ...
