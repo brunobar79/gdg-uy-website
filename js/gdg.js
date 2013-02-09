@@ -1,7 +1,7 @@
 var Config = (function(){
     var config = {
-        'name' : 'GDG Fresno',
-        'id' : '114769570436363155784',
+        'name' : _CHAPTER_NAME_,
+        'id' : _CHAPTER_ID_,
         'api': _API_KEY_
     }
     return {get : function(a) { return config[a]}}
