@@ -1,7 +1,10 @@
-GDG Bootstrap v0.01
-Created by Joshua Woodward
+GDG Bootstrap v0.02
+http://developers.google.com/groups
 
-Includes jQuery, Twitter Bootstrap, a JavaScript Date Formatter - License all inside
+Created by Joshua Woodward http://joshuawoodward.com/+
+Contribution from Friedger Müffke https://plus.google.com/107100127479392600261
+
+Includes jQuery, Twitter Bootstrap, and a JavaScript Date Formatter - License all inside
 
 How do I use it?
 Go to Google Developer API console (https://code.google.com/apis/console/) and create a project, or use existing one, that has the Google+ Service turned on. You will need an API Key to get "About" and "Photo" sections to work.
@@ -9,3 +12,22 @@ Go to Google Developer API console (https://code.google.com/apis/console/) and c
 Open /js/gdg.js and modify the config lines 3-5, with your GDG Name, Google+ Profile ID (Use your chapters +Page, not your personal), and API Key
 
 Should just work ...
+
+v 0.2
+Added bootstrap-responsive.min.css
+
+Events
+- Categorized upcoming and past events, 
+
+Photos
+- Changed layout, pulls last 22 photos
+
+v 0.1
+About
+- Pulled from Google+ API
+
+Events
+- Temporary pulls from gdgfresno.com/gdgfeed.php, until developers.google.com event feed implements JSONP ability
+
+Photos
+- Pulled from Google+ Photos, last 24 added
