@@ -1,9 +1,15 @@
 var Config = (function(){
     var config = {
         //modify these
+<<<<<<< HEAD
         'name' : _CHAPTER_NAME_,
         'id' : _CHAPTER_ID_,
         'google_api': _API_KEY_,
+=======
+        'name'          : _CHAPTER_NAME_,
+        'id' 	    	: _CHAPTER_ID_,
+        'google_api'    : _API_KEY_,
+>>>>>>> modify "Join" link
         //custom stuff
         'cover_photo'   : true, //best results make sure you have 940x180 image
         'cover_color'   : '#ffffff'
@@ -15,7 +21,7 @@ $('title').prepend(Config.get('name')+' | ');
 $('.brand').html('<strong>'+Config.get('name')+'</strong>');
 
 //join - "I'm a member button"
-$('li#join_chapter').click(function(){
+$('#join_chapter').click(function(){
     var win=window.open('https://developers.google.com/groups/chapter/join/'+Config.get('id'));
     setTimeout(function(){
         console.log('https://developers.google.com/groups/chapter/'+Config.get('id')+'/')
