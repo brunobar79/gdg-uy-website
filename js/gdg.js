@@ -3,7 +3,7 @@ var Config = (function(){
         //modify these
         'name' : _CHAPTER_NAME_,
         'id' : _CHAPTER_ID_,
-        'api': _API_KEY_
+        'google_api': _API_KEY_
     }
     return {get : function(a) { return config[a]}}
 })();
