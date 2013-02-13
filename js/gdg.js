@@ -3,14 +3,10 @@ var Config = (function(){
         //modify these
         'name' : _CHAPTER_NAME_,
         'id' : _CHAPTER_ID_,
-<<<<<<< HEAD
-        'google_api': _API_KEY_
-=======
         'google_api': _API_KEY_,
         //custom stuff
         'cover_photo'   : true, //best results make sure you have 940x180 image
         'cover_color'   : '#ffffff'
->>>>>>> v 0.3
     }
     return {get : function(a) { return config[a]}}
 })();
