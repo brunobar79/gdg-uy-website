@@ -13,6 +13,17 @@ Open /js/gdg.js and modify the config lines 3-5, with your GDG Name, Google+ Pro
 
 Should just work ...
 
+v 0.3
+Added two config options.
+
+cover_photo (boolean) - determines if you want to use cover photo from google+ chapter page, currently best if you use a 940x180 image
+
+cover_color (css color) - custom font color option for cover photo, for dark pictures
+
+Added "Join" link - if users is logged into Google, will automagically mark the "I'm a member button", otherwise does nothing.
+
+Minified dateFormat.js
+
 v 0.2
 Added bootstrap-responsive.min.css
 

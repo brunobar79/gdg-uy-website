@@ -3,18 +3,46 @@ var Config = (function(){
         //modify these
         'name' : _CHAPTER_NAME_,
         'id' : _CHAPTER_ID_,
+<<<<<<< HEAD
         'google_api': _API_KEY_
+=======
+        'google_api': _API_KEY_,
+        //custom stuff
+        'cover_photo'   : true, //best results make sure you have 940x180 image
+        'cover_color'   : '#ffffff'
+>>>>>>> v 0.3
     }
     return {get : function(a) { return config[a]}}
 })();
 
 $('title').prepend(Config.get('name')+' | ');
 $('.brand').html('<strong>'+Config.get('name')+'</strong>');
+
+//join - "I'm a member button"
+$('li#join_chapter').click(function(){
+    var win=window.open('https://developers.google.com/groups/chapter/join/'+Config.get('id'));
+    setTimeout(function(){
+        console.log('https://developers.google.com/groups/chapter/'+Config.get('id')+'/')
+        win.location.href = 'https://developers.google.com/groups/chapter/'+Config.get('id')+'/';
+    },500);
+    
+});
 $('li#googleplus').click(function(){window.open('https://plus.google.com/'+Config.get('id'))});
 
 //google+ page info
-$.get('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=aboutMe%2Ccover%2FcoverPhoto%2CdisplayName%2Cimage%2CplusOneCount&key='+Config.get('google_api'), function(data){
+$.get('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=aboutMe%2Ccover%2CdisplayName%2Cimage%2CplusOneCount&key='+Config.get('google_api'), function(data){
+    //about
     $('#about').next().next().html(data.aboutMe);
+    
+    //cover photo
+    if(data.cover.coverPhoto.url && Config.get('cover_photo')){
+        $('#home').css({
+            'background':'url('+data.cover.coverPhoto.url+') '+data.cover.coverInfo.leftImageOffset+'px '+(data.cover.coverInfo.topImageOffset)+'px',
+            'color' : Config.get('cover_color')
+        });
+        
+    }
+    
 })
 
 
@@ -44,14 +72,14 @@ $.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
     }
     var past = $('#past_events').next().next().children();
     if(past.length > 5 ){
-        $('#past_events').next().next().append('<div id="view_more_events"><a>More...</a></div>');
+        $('#past_events').next().next().append('<div id="view_more_events"><a href="#past_events">View More...</a></div>');
     }
     for( var i = past.length-1; i>=5; i--){
         past[i].style.display='none';
     }
     $('#view_more_events').click(function(){
         $('#past_events').next().next().children().slideDown();
-        this.style.display='none';
+        setTimeout(function(){$('#view_more_events').hide();},1)
     });
 },'json');
 
