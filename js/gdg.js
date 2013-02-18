@@ -2,11 +2,16 @@ var Config = (function(){
     var config = {
         //modify these
         'name'          : _CHAPTER_NAME_,
-        'id' 	    	: _CHAPTER_ID_,
-        'google_api'    : _API_KEY_,
+        'id'            : _CHAPTER_ID_,
+        'google_api'    : _GOOGLE_API_KEY_,
         //custom stuff
         'cover_photo'   : true, //best results make sure you have 940x180 image
-        'cover_color'   : '#ffffff'
+        'cover_color'   : '#ffffff',
+        'custom_albums' : {//coming soon
+                            events : {
+                                //'ahNzfmdvb2dsZS1kZXZlbG9wZXJzcg4LEgVFdmVudBib8PsDDA':'5738801490307387457'
+                            }
+                          }
     }
     return {get : function(a) { return config[a]}}
 })();
@@ -18,7 +23,6 @@ $('.brand').html('<strong>'+Config.get('name')+'</strong>');
 $('#join_chapter').click(function(){
     var win=window.open('https://developers.google.com/groups/chapter/join/'+Config.get('id'));
     setTimeout(function(){
-        console.log('https://developers.google.com/groups/chapter/'+Config.get('id')+'/')
         win.location.href = 'https://developers.google.com/groups/chapter/'+Config.get('id')+'/';
     },500);
     
@@ -26,7 +30,7 @@ $('#join_chapter').click(function(){
 $('li#googleplus').click(function(){window.open('https://plus.google.com/'+Config.get('id'))});
 
 //google+ page info
-$.get('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=aboutMe%2Ccover%2CdisplayName%2Cimage%2CplusOneCount&key='+Config.get('google_api'), function(data){
+$.getJSON('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=aboutMe%2Ccover%2CdisplayName%2Cimage%2CplusOneCount&key='+Config.get('google_api'), function(data){
     //about
     $('#about').next().next().html(data.aboutMe);
     
@@ -41,9 +45,19 @@ $.get('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=abo
     
 })
 
+//tie photo album to event
+var handleEventPhotos = function(event_id, album_id){
+    $.getJSON('https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/albumid/'+album_id+'?alt=json-in-script&callback=?&max-results=12&kind=photo',function(d){
+        var tn, p = d.feed.entry;
+        for(var x in p){
+            tn = '<li class="span2"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=260" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
+            $('#'+event_id).append(tn);
+        }
+    });
+}
 
 //gdg dev site events feed
-$.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
+$.getJSON("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
     var now = new Date();
     for(var i=data.length-1;i>=0;i--){
         var start = new Date(data[i].start);
@@ -57,10 +71,19 @@ $.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
                             '<h4 class="media-heading"><a href="https://developers.google.com'+data[i].link+'" target="_blank">'+data[i].title+'</a></h4>' +
                             '<h5>'+data[i].location+'<br/>'+format+'</h5>' +
                             data[i].description +
-                        '</div>';        
-        html +='</div>';
+                        '</div>';   
         
-	if (start < now){
+        if(Config.get('custom_albums')){
+            var album_id = Config.get('custom_albums').events[data[i].id];
+            if( album_id ){
+                html+='<div><ul class="thumbnails" id="'+data[i].id+'"></ul></div>';
+                handleEventPhotos(data[i].id, album_id);
+            }
+        }
+        
+        html +='</div>';
+	
+        if (start < now){
             $('#past_events').next().next().append(html);
 	} else {
             $('#upcoming_events').next().next().prepend(html);
@@ -77,21 +100,165 @@ $.get("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data){
         $('#past_events').next().next().children().slideDown();
         setTimeout(function(){$('#view_more_events').hide();},1)
     });
-},'json');
+});
 
 //google+ photos
-var parsePWA = function(d){
-    var url, html, p = d.feed.entry, count=0;
+$.getJSON('https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/?alt=json-in-script&callback=?&max-results=18&kind=photo', function(d){
+    var html, p = d.feed.entry, count=0;
     for(var x in p){
         count++;
         if(count == 1){
-            html = '<li class="span6"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=460" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
-        }else if(count == 8){
-            html = '<li class="span6 pull-right"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=460" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
+            html = '<li class="span4"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=460" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
+        }else if(count == 14){
+            html = '<li class="span4 pull-right"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=460" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
         }else{
-            html = '<li class="span3"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=260" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
+            html = '<li class="span2"><a href="'+p[x].link[1].href+'" class="thumbnail" target="_blank"><img src="'+ p[x].content.src + '?sz=260" alt="'+p[x].title.$t+'" title="'+p[x].summary.$t+'"></a></li>'
         }
         $('#photo_container').append(html);
     }
-};
-$.get('https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/?alt=json-in-script&callback=parsePWA&max-results=22&kind=photo');
+});
+
+//gdg g+ stream for news (reusing code from Roman Nurik for aggregating g+, twitter and friend feed stream into a webpage)
+$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/activities/public?maxResults=5&key=' +Config.get('google_api'), function(response) {
+      if (response.error) {
+        rebuildStreamUI([]);
+        if (console && console.error) {
+          console.error('Error loading Google+ stream.', response.error);
+        }
+        return;
+      }
+      
+      var entries = [];
+      for (var i = 0; i < response.items.length; i++) {
+        var item = response.items[i];
+        var object = item.object || {};
+        // Normalize tweet to a FriendFeed-like entry.
+        var item_title = '<b><a href="' + item.url + '">' + item.title + '</a></b>';
+        
+        var html = [item_title.replace(new RegExp('\n','g'), '<br />')];
+        //html.push(' <b>Read More &raquo;</a>');
+
+        var thumbnails = [];
+
+        var attachments = object.attachments || [];
+        for (var j = 0; j < attachments.length; j++) {
+          var attachment = attachments[j];
+          switch (attachment.objectType) {
+            case 'album':
+              break;//needs more work
+		var upper = attachment.thumbnails.length > 7 ? 7 : attachment.thumbnails.length;
+		html.push('<ul class="thumbnails">');
+		for(var k=1; k<upper; k++){
+		    html.push('<li class="span2"><img src="' + attachment.thumbnails[k].image.url + '" /></li>');
+		}
+		html.push('</ul>');
+	    
+            case 'photo':
+              thumbnails.push({
+                url: attachment.image.url,
+                link: attachment.fullImage.url
+              });
+              break;
+
+            case 'video':
+              thumbnails.push({
+                url: attachment.image.url,
+                link: attachment.url
+              });
+              break;
+
+            case 'article':
+              html.push('<div class="link-attachment"><a href="' +
+                  attachment.url + '">' + attachment.displayName + '</a>');
+              if (attachment.content) {
+                html.push('<br>' + attachment.content + '');
+              }
+              html.push('</div>');
+              break;
+          }
+        }
+
+        html = html.join('');
+
+        var entry = {
+          via: {
+            name: 'Google+',
+            url: item.url
+          },
+          body: html,
+          date: item.updated,
+          reshares: (object.resharers || {}).totalItems,
+          plusones: (object.plusoners || {}).totalItems,
+          comments: (object.replies || {}).totalItems,
+          thumbnails: thumbnails
+        };
+
+        entries.push(entry);
+      }
+
+      rebuildStreamUI(entries);
+  });
+
+// To be called once we have stream data
+function rebuildStreamUI(entries) {
+  entries = entries || [];
+  entries.sort(function(x,y){ return y.date - x.date; });
+  
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    var $entry = $('<li>')
+        .addClass(entry.via.name)
+        .html(entry.body)
+    
+    // Entry icon
+    $('<img class="icon">')
+        .attr('src', 'img/google-plus.png')
+        .appendTo($entry);
+    
+    // Thumbnails
+    if (entry.thumbnails && entry.thumbnails.length) {
+      var $thumbs = $('<ul class="thumbnails">').appendTo($entry);
+      for (var j = 0; j < entry.thumbnails.length; j++) {
+        var thumb = entry.thumbnails[j];
+        var $thumb = $('<li>').appendTo($thumbs);
+        if (thumb.link)
+          $thumb = $('<a>')
+              .attr('href', thumb.link)
+              .appendTo($thumb);
+        $('<img>')
+            .attr({
+              src: thumb.url/*,
+              width: thumb.width,
+              height: thumb.height*/
+            })
+            .appendTo($thumb);
+      }
+    }
+
+    // Meta (date/time, via link)
+    var $meta = $('<div class="meta">').appendTo($entry);
+    $('<span class="from">')
+        .html('' + dateFormat(entry.date, 'fullDate') + 'on ' + entry.via.name)
+        .appendTo($meta);
+	
+    if (entry.plusones) {
+      $('<span class="small-numeric-meta">')
+          .text('+' + entry.plusones)
+          .appendTo($meta);
+    }
+    if (entry.comments) {
+      $('<span class="small-numeric-meta">')
+          .text(entry.comments + ' comment' +
+              ((entry.comments == 1) ? '' : 's'))
+          .appendTo($meta);
+    }
+    if (entry.reshares) {
+      $('<span class="small-numeric-meta">')
+          .text(entry.reshares + ' reshare' +
+              ((entry.reshares == 1) ? '' : 's'))
+          .appendTo($meta);
+    }
+
+    $entry.appendTo('#news-feed');
+  }
+}
