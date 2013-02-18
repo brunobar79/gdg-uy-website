@@ -13,6 +13,17 @@ Go to Google Developer API console (https://code.google.com/apis/console/) and c
 Open /js/gdg.js and modify the config lines 3-5, with your GDG Name, Google+ Profile ID (Use your chapters +Page, not your personal), and API Key
 
 Should just work ...
+
+LIVE EXAMPLES
+=============
+GDG Fresno - http://gdgfresno.com
+GDG Albuquerque - http://gdgabq.com/
+GDG Zurich - http://gdgzh.ch/test/
+Brussels GTUG - https://googledrive.com/host/0B5AyOi3Zg85OT1pueUl4QzZ2YVk/index.html
+
+
+
+
 =======================================
 v 0.4
 Added Google+ Stream, by Michel Racic
