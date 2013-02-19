@@ -3,11 +3,12 @@ var Config = (function(){
         //modify these
         'name'          : _CHAPTER_NAME_,
         'id'            : _CHAPTER_ID_,
-        'google_api'    : _GOOGLE_API_KEY_,
+        'google_api'    : _API_KEY_,
+        'pwa_id'        : _PICASA_ALBUM_ID, //picasa web album id
         //custom stuff
         'cover_photo'   : true, //best results make sure you have 940x180 image
         'cover_color'   : '#ffffff',
-        'custom_albums' : {//coming soon
+        'custom_albums' : {
                             events : {
                                 //'ahNzfmdvb2dsZS1kZXZlbG9wZXJzcg4LEgVFdmVudBib8PsDDA':'5738801490307387457'
                             }
@@ -16,8 +17,32 @@ var Config = (function(){
     return {get : function(a) { return config[a]}}
 })();
 
+/**************/
+//INIT
+$(document).ready(function() {
+    changePanel();
+    $('#about_sec').show();
+    $('#about_nav').addClass('active');
+});
 $('title').prepend(Config.get('name')+' | ');
 $('.brand').html('<strong>'+Config.get('name')+'</strong>');
+
+/*************/
+
+
+$(window).on('hashchange', function() {
+    changePanel();
+});
+
+var changePanel = function(){
+    var panel = location.hash.substr(1);
+    if(panel != ''){
+        $('.panel').hide();
+        $('.nav li').removeClass('active');
+        $('#'+panel+'_sec').show();
+        $('#'+panel+'_nav').addClass('active');
+    }
+}
 
 //join - "I'm a member button"
 $('#join_chapter').click(function(){
@@ -32,7 +57,7 @@ $('li#googleplus').click(function(){window.open('https://plus.google.com/'+Confi
 //google+ page info
 $.getJSON('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields=aboutMe%2Ccover%2CdisplayName%2Cimage%2CplusOneCount&key='+Config.get('google_api'), function(data){
     //about
-    $('#about').next().next().html(data.aboutMe);
+    $('#about').next().html(data.aboutMe);
     
     //cover photo
     if(data.cover.coverPhoto.url && Config.get('cover_photo')){
@@ -91,7 +116,7 @@ $.getJSON("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data)
     }
     var past = $('#past_events').next().next().children();
     if(past.length > 5 ){
-        $('#past_events').next().next().append('<div id="view_more_events"><a href="#past_events">View More...</a></div>');
+        $('#past_events').next().next().append('<div id="view_more_events"><a href="#">View More...</a></div>');
     }
     for( var i = past.length-1; i>=5; i--){
         past[i].style.display='none';
@@ -103,7 +128,8 @@ $.getJSON("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data)
 });
 
 //google+ photos
-$.getJSON('https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/?alt=json-in-script&callback=?&max-results=18&kind=photo', function(d){
+var pwa = 'https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/albumid/'+Config.get('pwa_id')+'?access=public&alt=json-in-script&kind=photo&max-results=18&fields=entry(title,link/@href,summary,content/@src)&v=2.0&callback=?';
+$.getJSON(pwa, function(d){
     var html, p = d.feed.entry, count=0;
     for(var x in p){
         count++;
@@ -119,7 +145,7 @@ $.getJSON('https://picasaweb.google.com/data/feed/api/user/'+Config.get('id')+'/
 });
 
 //gdg g+ stream for news (reusing code from Roman Nurik for aggregating g+, twitter and friend feed stream into a webpage)
-$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/activities/public?maxResults=5&key=' +Config.get('google_api'), function(response) {
+$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/activities/public?maxResults=10&key=' +Config.get('google_api'), function(response) {
       if (response.error) {
         rebuildStreamUI([]);
         if (console && console.error) {
@@ -131,6 +157,7 @@ $.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/ac
       var entries = [];
       for (var i = 0; i < response.items.length; i++) {
         var item = response.items[i];
+        var actor = item.actor || {};
         var object = item.object || {};
         // Normalize tweet to a FriendFeed-like entry.
         var item_title = '<b><a href="' + item.url + '">' + item.title + '</a></b>';
@@ -179,7 +206,10 @@ $.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/ac
         }
 
         html = html.join('');
-
+        
+        var actor_image = actor.image.url;
+        actor_image = actor_image.substr(0,actor_image.length-2)+'16';
+        
         var entry = {
           via: {
             name: 'Google+',
@@ -190,7 +220,8 @@ $.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/ac
           reshares: (object.resharers || {}).totalItems,
           plusones: (object.plusoners || {}).totalItems,
           comments: (object.replies || {}).totalItems,
-          thumbnails: thumbnails
+          thumbnails: thumbnails,
+          icon: actor_image
         };
 
         entries.push(entry);
@@ -212,7 +243,7 @@ function rebuildStreamUI(entries) {
     
     // Entry icon
     $('<img class="icon">')
-        .attr('src', 'img/google-plus.png')
+        .attr('src', entry.icon)
         .appendTo($entry);
     
     // Thumbnails
@@ -238,27 +269,30 @@ function rebuildStreamUI(entries) {
     // Meta (date/time, via link)
     var $meta = $('<div class="meta">').appendTo($entry);
     $('<span class="from">')
-        .html('' + dateFormat(entry.date, 'fullDate') + 'on ' + entry.via.name)
+        .html('Posted on ' + dateFormat(entry.date, 'fullDate'))
         .appendTo($meta);
 	
-    if (entry.plusones) {
-      $('<span class="small-numeric-meta">')
-          .text('+' + entry.plusones)
-          .appendTo($meta);
-    }
+    
+        
     if (entry.comments) {
-      $('<span class="small-numeric-meta">')
+      $('<span class="label">')
           .text(entry.comments + ' comment' +
               ((entry.comments == 1) ? '' : 's'))
-          .appendTo($meta);
+          .appendTo($entry);
     }
     if (entry.reshares) {
-      $('<span class="small-numeric-meta">')
+      $('<span class="label">')
           .text(entry.reshares + ' reshare' +
               ((entry.reshares == 1) ? '' : 's'))
-          .appendTo($meta);
+          .appendTo($entry);
     }
+    //+1 button
+    $('<span class="g-plusone label" data-size="medium" data-annotation="bubble" data-href="'+entry.via.url+'">')
+        .appendTo($entry);
 
     $entry.appendTo('#news-feed');
   }
+  
+  //render +1 buttons
+  gapi.plusone.go();
 }

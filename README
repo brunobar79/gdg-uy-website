@@ -1,10 +1,13 @@
 GDG Bootstrap v0.02
 http://developers.google.com/groups
 
-Created by Joshua Woodward http://joshuawoodward.com/+
+Created by +Joshua Woodward http://joshuawoodward.com/+
+
 Contribution from:
-Friedger Müffke https://plus.google.com/107100127479392600261
-Michel Racic https://plus.google.com/109163915105172405583
++Friedger Müffke    https://plus.google.com/107100127479392600261 (Events - upcoming/previous)
++Michel Racic       https://plus.google.com/109163915105172405583 (News Feed)
++Dustin Brand       https://plus.google.com/111468921647150271146 (+1 button)
+
 Includes jQuery, Twitter Bootstrap, and a JavaScript Date Formatter - License all inside
 
 How do I use it?
@@ -23,6 +26,16 @@ Brussels GTUG - https://googledrive.com/host/0B5AyOi3Zg85OT1pueUl4QzZ2YVk/index.
 
 
 
+
+=======================================
+v 0.5
+Changed layout to display more like tabs
+
+Modified news section, +1 post directly from your website
+
+include a picasa web album id - pwa seems to be buggy when just trying to get last overall
+
+Some other stuff...
 
 =======================================
 v 0.4

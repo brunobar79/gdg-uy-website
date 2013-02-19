@@ -57,12 +57,23 @@
   text-decoration: underline;
 }
 
-#news-feed li .small-numeric-meta {
-  background-color: #eee;
-  border-radius: 5px;
-  padding: 3px 6px;
-  margin: 0 6px;
-  color: #888;
+#news-feed .label {
+  margin: 0 6px 0 0;
+  vertical-align: top;
+  border: 1px solid #CBCBCB;
+  color: #DA573A;
+  text-shadow: none;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  background: rgb(251,251,251); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(251,251,251,1) 0%, rgba(245,245,245,1) 5%, rgba(242,240,240,1) 19%, rgba(242,242,242,1) 24%, rgba(228,228,228,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(251,251,251,1)), color-stop(5%,rgba(245,245,245,1)), color-stop(19%,rgba(242,240,240,1)), color-stop(24%,rgba(242,242,242,1)), color-stop(100%,rgba(228,228,228,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(251,251,251,1) 0%,rgba(245,245,245,1) 5%,rgba(242,240,240,1) 19%,rgba(242,242,242,1) 24%,rgba(228,228,228,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(251,251,251,1) 0%,rgba(245,245,245,1) 5%,rgba(242,240,240,1) 19%,rgba(242,242,242,1) 24%,rgba(228,228,228,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(251,251,251,1) 0%,rgba(245,245,245,1) 5%,rgba(242,240,240,1) 19%,rgba(242,242,242,1) 24%,rgba(228,228,228,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(251,251,251,1) 0%,rgba(245,245,245,1) 5%,rgba(242,240,240,1) 19%,rgba(242,242,242,1) 24%,rgba(228,228,228,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbfbfb', endColorstr='#e4e4e4',GradientType=0 ); /* IE6-9 */
 }
 
 #news-feed li .link-attachment {
@@ -84,4 +95,36 @@
 
 #news-feed li .thumbnails img {
   height: 100px;
+}
+
+body {
+  overflow-y: scroll;
+}
+#gdg_ribbon {
+  position: fixed;
+  top:0;
+  right:0;
+  border: 0;
+  z-index: 1031;
+}
+
+.panel {
+  display:none;
+}
+
+.hero-gradient {
+  width: 940px;
+  height: 180px;
+  background-color: #333;
+  position: absolute;
+  margin-left: -60px;
+  margin-top: -172px;
+  background: -moz-linear-gradient(left,  rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0.65)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* IE10+ */
+background: linear-gradient(to right,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
+
 }
