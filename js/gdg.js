@@ -1,16 +1,18 @@
 var Config = (function(){
     var config = {
         //modify these
-        'name'          : _CHAPTER_NAME_,
-        'id'            : _CHAPTER_ID_,
-        'google_api'    : _API_KEY_,
-        'pwa_id'        : _PICASA_ALBUM_ID, //picasa web album id
+        'name'          : 'GDG Uruguay',
+        'id'            : '114520966453242230657',
+        'community_id'  : '113262811580160214340',
+        'google_api'    : 'AIzaSyCmo19Hm7Xtdcpy4_1qT2VQlf4QSr85-sg',
+        'pwa_id'        : '5746254019147236129', //picasa web album id
+        
         //custom stuff
         'cover_photo'   : true, //best results make sure you have 940x180 image
         'cover_color'   : '#ffffff',
         'custom_albums' : {
                             events : {
-                                //'ahNzfmdvb2dsZS1kZXZlbG9wZXJzcg4LEgVFdmVudBib8PsDDA':'5738801490307387457'
+                                'ch6d9fktd087t1phep749rqq83g':'107387383576980892273'
                             }
                           }
     }
@@ -22,7 +24,8 @@ var Config = (function(){
 $(document).ready(function() {
     changePanel();
     $('#about_sec').show();
-    $('#about_nav').addClass('active');
+    //$('#news_sec').show();
+    //$('#about_nav').addClass('active');
 });
 $('title').prepend(Config.get('name')+' | ');
 $('.brand').html('<strong>'+Config.get('name')+'</strong>');
@@ -62,7 +65,7 @@ $.getJSON('https://www.googleapis.com/plus/v1/people/'+Config.get('id')+'?fields
     //cover photo
     if(data.cover.coverPhoto.url && Config.get('cover_photo')){
         $('#home').css({
-            'background':'url('+data.cover.coverPhoto.url+') '+data.cover.coverInfo.leftImageOffset+'px '+(data.cover.coverInfo.topImageOffset)+'px',
+            'background':'url(https://lh4.googleusercontent.com/-G6Nv5B-2Csc/AAAAAAAAAAI/AAAAAAAAAE0/4vr4qw6DAZk/s120-c/photo.jpg) '+data.cover.coverInfo.leftImageOffset+'px '+(data.cover.coverInfo.topImageOffset)+'px no-repeat',
             'color' : Config.get('cover_color')
         });
         
@@ -99,6 +102,7 @@ $.getJSON("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data)
                         '</div>';   
         
         if(Config.get('custom_albums')){
+
             var album_id = Config.get('custom_albums').events[data[i].id];
             if( album_id ){
                 html+='<div><ul class="thumbnails" id="'+data[i].id+'"></ul></div>';
@@ -125,6 +129,7 @@ $.getJSON("http://gdgfresno.com/gdgfeed.php?id="+Config.get('id'),function(data)
         $('#past_events').next().next().children().slideDown();
         setTimeout(function(){$('#view_more_events').hide();},1)
     });
+
 });
 
 //google+ photos
@@ -145,9 +150,10 @@ $.getJSON(pwa, function(d){
 });
 
 //gdg g+ stream for news (reusing code from Roman Nurik for aggregating g+, twitter and friend feed stream into a webpage)
-$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/activities/public?maxResults=10&key=' +Config.get('google_api'), function(response) {
+$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/activities/public?maxResults=20&key=' +Config.get('google_api'), function(response) {
+
       if (response.error) {
-        rebuildStreamUI([]);
+        rebuildStreamUI([],'news-feed');
         if (console && console.error) {
           console.error('Error loading Google+ stream.', response.error);
         }
@@ -221,17 +227,110 @@ $.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('id') + '/ac
           plusones: (object.plusoners || {}).totalItems,
           comments: (object.replies || {}).totalItems,
           thumbnails: thumbnails,
-          icon: actor_image
+          icon: actor_image,
+          actor: actor
         };
 
         entries.push(entry);
       }
 
-      rebuildStreamUI(entries);
+      rebuildStreamUI(entries,'news-feed');
+  });
+
+
+
+//gdg g+ stream for community (reusing code from Roman Nurik for aggregating g+, twitter and friend feed stream into a webpage)
+
+$.getJSON('https://www.googleapis.com/plus/v1/people/' + Config.get('community_id') + '/activities/public?maxResults=20&key=' +Config.get('google_api'), function(response) {
+      console.log(response);
+      if (response.error) {
+        rebuildStreamUI([],'community-feed');
+        if (console && console.error) {
+          console.error('Error loading Google+ stream.', response.error);
+        }
+        return;
+      }
+      
+      var entries = [];
+      for (var i = 0; i < response.items.length; i++) {
+        var item = response.items[i];
+        console.log(item);
+        var actor = item.actor || {};
+        var object = item.object || {};
+        // Normalize tweet to a FriendFeed-like entry.
+        var item_title = '<b><a href="' + item.url + '">' + item.title + '</a></b>';
+        
+        var html = [item_title.replace(new RegExp('\n','g'), '<br />')];
+        //html.push(' <b>Read More &raquo;</a>');
+
+        var thumbnails = [];
+
+        var attachments = object.attachments || [];
+        for (var j = 0; j < attachments.length; j++) {
+          var attachment = attachments[j];
+          switch (attachment.objectType) {
+            case 'album':
+              break;//needs more work
+              var upper = attachment.thumbnails.length > 7 ? 7 : attachment.thumbnails.length;
+              html.push('<ul class="thumbnails">');
+              for(var k=1; k<upper; k++){
+                  html.push('<li class="span2"><img src="' + attachment.thumbnails[k].image.url + '" /></li>');
+              }
+              html.push('</ul>');
+      
+            case 'photo':
+              thumbnails.push({
+                url: attachment.image.url,
+                link: attachment.fullImage.url
+              });
+              break;
+
+            case 'video':
+              thumbnails.push({
+                url: attachment.image.url,
+                link: attachment.url
+              });
+              break;
+
+            case 'article':
+              html.push('<div class="link-attachment"><a href="' +
+                  attachment.url + '">' + attachment.displayName + '</a>');
+              if (attachment.content) {
+                html.push('<br>' + attachment.content + '');
+              }
+              html.push('</div>');
+              break;
+          }
+        }
+
+        html = html.join('');
+        
+        var actor_image = actor.image.url;
+        actor_image = actor_image.substr(0,actor_image.length-2)+'16';
+        
+        var entry = {
+          via: {
+            name: 'Google+',
+            url: item.url
+          },
+          body: html,
+          date: item.updated,
+          reshares: (object.resharers || {}).totalItems,
+          plusones: (object.plusoners || {}).totalItems,
+          comments: (object.replies || {}).totalItems,
+          thumbnails: thumbnails,
+          icon: actor_image,
+          actor: actor
+        };
+
+        entries.push(entry);
+      }
+
+      rebuildStreamUI(entries,'community-feed');
   });
 
 // To be called once we have stream data
-function rebuildStreamUI(entries) {
+function rebuildStreamUI(entries,target) {
   entries = entries || [];
   entries.sort(function(x,y){ return y.date - x.date; });
   
@@ -269,7 +368,7 @@ function rebuildStreamUI(entries) {
     // Meta (date/time, via link)
     var $meta = $('<div class="meta">').appendTo($entry);
     $('<span class="from">')
-        .html('Posted on ' + dateFormat(entry.date, 'fullDate'))
+        .html('Publicado el ' + dateFormat(entry.date, 'fullDate') + ' por <a href="'+entry.actor.url+'" target="_blank">'+entry.actor.displayName+'</a>')
         .appendTo($meta);
 	
     
@@ -290,7 +389,7 @@ function rebuildStreamUI(entries) {
     $('<span class="g-plusone label" data-size="medium" data-annotation="bubble" data-href="'+entry.via.url+'">')
         .appendTo($entry);
 
-    $entry.appendTo('#news-feed');
+    $entry.appendTo('#'+target);
   }
   
   //render +1 buttons
